@@ -55,4 +55,5 @@ public class Movement : MonoBehaviour
             controller.Move(direction * speed * Time.deltaTime);
         }
     }
+
 }

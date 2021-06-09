@@ -65,18 +65,25 @@ namespace Project.Networking
 
                 Camera.main.GetComponent<CameraFollow>().setTarget(go.transform);
 
-                Debug.Log("");
             });
 
             On("updatePosition", (E) =>
             {
                 string id = E.data["id"].ToString().RemoveQuotes();
-                float x = E.data["position"]["x"].f;
-                float y = E.data["position"]["y"].f;
-                float z = E.data["position"]["z"].f;
+                float xPosition = E.data["position"]["x"].f;
+                float yPosition = E.data["position"]["y"].f;
+                float zPosition = E.data["position"]["z"].f;
+
+                float xRotation = E.data["rotation"]["x"].f;
+                float yRotation = E.data["rotation"]["y"].f;
+                float zRotation = E.data["rotation"]["z"].f;
+                float wRotation = E.data["rotation"]["w"].f;
 
                 NetworkIdentity ni = serverObjects[id];
-                ni.transform.position = new Vector3(x, y, z);
+                ni.transform.position = new Vector3(xPosition, yPosition, zPosition);
+
+
+                ni.transform.rotation = new Quaternion(xRotation, yRotation, zRotation, wRotation);
             });
 
             On("disconnected", (E) =>
@@ -88,6 +95,12 @@ namespace Project.Networking
                 serverObjects.Remove(id); // Remove from memory
             });
         }
+
+        public void AttemptToJoinLobby()
+        {
+            Emit("joinGame");
+        }
+
     }
 
     [Serializable]
