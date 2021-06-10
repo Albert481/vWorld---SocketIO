@@ -1,13 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using SocketIO;
+using UnitySocketIO;
+using UnitySocketIO.Events;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using Project.Utility;
 
 namespace Project.Networking
 {
-    public class NetworkClient : SocketIOComponent
+    public class NetworkClient : MonoBehaviour
     {
         [Header("Network Client")]
         [SerializeField]
@@ -15,22 +18,25 @@ namespace Project.Networking
         [SerializeField]
         private GameObject playerPrefab;
 
+        public SocketIOController io;
+
         public static string ClientID { get; private set; }
 
         private Dictionary<string, NetworkIdentity> serverObjects;
 
         // Start is called before the first frame update
-        public override void Start()
+        public void Start()
         {
-            base.Start();
+            // base.Start();
             initialize();
             setupEvents();
+            io.Connect();
         }
 
         // Update is called once per frame
-        public override void Update()
+        public void Update()
         {
-            base.Update();
+            // base.Update();
         }
         private void initialize()
         {
@@ -39,45 +45,53 @@ namespace Project.Networking
 
         private void setupEvents()
         {
-            On("open", (E) =>
+            io.On("connect", (SocketIOEvent E) =>
             {
                 Debug.Log("Connection made to the server.");
             });
 
-            On("registerPlayer", (E) =>
+            io.On("registerPlayer", (SocketIOEvent E) =>
             {
-                ClientID = E.data["id"].ToString().RemoveQuotes();
+                // ClientID = E.data["id"].ToString().RemoveQuotes();
+                var obj = (JObject) JsonConvert.DeserializeObject<object>(E.data);
+                ClientID = obj["id"].Value<string>();
+
                 Debug.LogFormat("Client ID ({0})", ClientID);
             });
 
-            On("spawnPlayer", (E) =>
+            io.On("spawnPlayer", (SocketIOEvent E) =>
             {
                 // Handling all spawning all players
                 // Passed Data
-                string id = E.data["id"].ToString().RemoveQuotes();
+                // string id = E.data["id"].ToString().RemoveQuotes();
+                var obj = (JObject)JsonConvert.DeserializeObject<object>(E.data);
+                string id = obj["id"].Value<string>();
 
                 GameObject go = Instantiate(playerPrefab, networkContainer);
                 go.name = string.Format("Player ({0})", id);
                 NetworkIdentity ni = go.GetComponent<NetworkIdentity>();
                 ni.setControllerID(id);
-                ni.SetSocketReference(this);
+                ni.SetSocketReference(io);
                 serverObjects.Add(id, ni);
 
                 Camera.main.GetComponent<CameraFollow>().setTarget(go.transform);
 
             });
 
-            On("updatePosition", (E) =>
+            io.On("updatePosition", (SocketIOEvent E) =>
             {
-                string id = E.data["id"].ToString().RemoveQuotes();
-                float xPosition = E.data["position"]["x"].f;
-                float yPosition = E.data["position"]["y"].f;
-                float zPosition = E.data["position"]["z"].f;
+                // string id = E.data["id"].ToString().RemoveQuotes();
+                var obj = (JObject)JsonConvert.DeserializeObject<object>(E.data);
+                string id = obj["id"].Value<string>();
 
-                float xRotation = E.data["rotation"]["x"].f;
-                float yRotation = E.data["rotation"]["y"].f;
-                float zRotation = E.data["rotation"]["z"].f;
-                float wRotation = E.data["rotation"]["w"].f;
+                float xPosition = obj["position"]["x"].Value<float>();
+                float yPosition = obj["position"]["y"].Value<float>();
+                float zPosition = obj["position"]["z"].Value<float>();
+
+                float xRotation = obj["rotation"]["x"].Value<float>();
+                float yRotation = obj["rotation"]["y"].Value<float>();
+                float zRotation = obj["rotation"]["z"].Value<float>();
+                float wRotation = obj["rotation"]["w"].Value<float>();
 
                 NetworkIdentity ni = serverObjects[id];
                 ni.transform.position = new Vector3(xPosition, yPosition, zPosition);
@@ -86,9 +100,11 @@ namespace Project.Networking
                 ni.transform.rotation = new Quaternion(xRotation, yRotation, zRotation, wRotation);
             });
 
-            On("disconnected", (E) =>
+            io.On("disconnected", (SocketIOEvent E) =>
             {
-                string id = E.data["id"].ToString().RemoveQuotes();
+                // string id = E.data["id"].ToString().RemoveQuotes();
+                var obj = (JObject)JsonConvert.DeserializeObject<object>(E.data);
+                string id = obj["id"].Value<string>();
 
                 GameObject go = serverObjects[id].gameObject;
                 Destroy(go); // Remove from game
@@ -98,7 +114,7 @@ namespace Project.Networking
 
         public void AttemptToJoinLobby()
         {
-            Emit("joinGame");
+            io.Emit("joinGame");
         }
 
     }

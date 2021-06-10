@@ -71,7 +71,7 @@ namespace Project.Networking
             player.rotation.z = Mathf.Round(transform.rotation.z * 1000.0f) / 1000.0f;
             player.rotation.w = Mathf.Round(transform.rotation.w * 1000.0f) / 1000.0f;
 
-            networkIdentity.GetSocket().Emit("updatePosition", new JSONObject(JsonUtility.ToJson(player)));
+            networkIdentity.GetSocket().Emit("updatePosition", JsonUtility.ToJson(player));
             
         }
     }
