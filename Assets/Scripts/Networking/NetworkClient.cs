@@ -74,7 +74,10 @@ namespace Project.Networking
                 ni.SetSocketReference(io);
                 serverObjects.Add(id, ni);
 
-                Camera.main.GetComponent<CameraFollow>().setTarget(go.transform);
+                if (ni.IsControlling())
+                {
+                    Camera.main.GetComponent<CameraFollow>().setTarget(go.transform);
+                }
 
             });
 
