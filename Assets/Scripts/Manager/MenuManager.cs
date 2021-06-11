@@ -47,7 +47,7 @@ namespace Project.Managers
 
         public void OnQueue()
         {
-            
+            socketReference.AttemptToJoinLobby();
         }
 
         public void OnSignIn()

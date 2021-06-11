@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 namespace Project.Utility
 {
     public class SceneManagementManager : Singleton<SceneManagementManager>
@@ -77,20 +78,20 @@ namespace Project.Utility
 
             Debug.LogErrorFormat("Failed to unload level ({0}), most likely was never loaded to begin with or was already unloaded", levelName);
         }
+    }
 
-        [Serializable]
-        public class LevelLoadingData
-        {
-            public AsyncOperation ao;
-            public string sceneName;
-            public Action<string> onLevelLoaded;
-        }
+    [Serializable]
+    public class LevelLoadingData
+    {
+        public AsyncOperation ao;
+        public string sceneName;
+        public Action<string> onLevelLoaded;
+    }
 
-        public static class SceneList
-        {
-            public const string MAIN_MENU = "MainMenu";
-            public const string LEVEL = "Level";
-        }
+    public static class SceneList
+    {
+        public const string MAIN_MENU = "MainMenu";
+        public const string LEVEL = "Level";
     }
 
 }

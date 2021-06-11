@@ -76,9 +76,18 @@ namespace Project.Networking
 
                 if (ni.IsControlling())
                 {
-                    Camera.main.GetComponent<CameraFollow>().setTarget(go.transform);
+                    Camera.main.GetComponentInChildren<CameraFollow>().setTarget(go.transform);
                 }
 
+            });
+
+            io.On("loadGame", (SocketIOEvent E) =>
+            {
+                Debug.Log("Switching to game");
+                SceneManagementManager.Instance.LoadLevel(SceneList.LEVEL, (levelName) =>
+                {
+                    SceneManagementManager.Instance.UnLoadLevel(SceneList.MAIN_MENU);
+                });
             });
 
             io.On("updatePosition", (SocketIOEvent E) =>
