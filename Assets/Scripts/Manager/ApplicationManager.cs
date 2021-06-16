@@ -10,7 +10,7 @@ namespace Project.Managers
         // Start is called before the first frame update
         void Start()
         {
-            SceneManagementManager.Instance.LoadLevel(SceneList.MAIN_MENU, (levelName) =>
+            SceneManagementManager.Instance.LoadLevel(SceneList.LOBBY, (levelName) =>
             {
 
             });

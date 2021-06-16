@@ -90,8 +90,7 @@ namespace Project.Utility
 
     public static class SceneList
     {
-        public const string MAIN_MENU = "MainMenu";
-        public const string LEVEL = "Level";
+        public const string LOBBY = "SampleScene";
     }
 
 }

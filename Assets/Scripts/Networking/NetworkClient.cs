@@ -84,9 +84,9 @@ namespace Project.Networking
             io.On("loadGame", (SocketIOEvent E) =>
             {
                 Debug.Log("Switching to game");
-                SceneManagementManager.Instance.LoadLevel(SceneList.LEVEL, (levelName) =>
+                SceneManagementManager.Instance.LoadLevel(SceneList.LOBBY, (levelName) =>
                 {
-                    SceneManagementManager.Instance.UnLoadLevel(SceneList.MAIN_MENU);
+                    // SceneManagementManager.Instance.UnLoadLevel(SceneList.LOBBY);
                 });
             });
 
@@ -110,6 +110,20 @@ namespace Project.Networking
 
 
                 ni.transform.rotation = new Quaternion(xRotation, yRotation, zRotation, wRotation);
+            });
+
+            io.On("chatMessage", (SocketIOEvent E) =>
+            {
+                
+                var obj = (JObject)JsonConvert.DeserializeObject<object>(E.data);
+                string id = obj["id"].Value<string>();
+                // string roomid = obj["roomid"].Value<string>();
+
+                // If logged in,
+
+
+
+
             });
 
             io.On("disconnected", (SocketIOEvent E) =>

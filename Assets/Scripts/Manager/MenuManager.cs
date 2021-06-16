@@ -50,21 +50,6 @@ namespace Project.Managers
             socketReference.AttemptToJoinLobby();
         }
 
-        public void OnSignIn()
-        {
-
-        }
-
-        public void OnSignInComplete()
-        {
-
-        }
-
-        public void OnCreateAccount()
-        {
-
-        }
-
         public void EditUsername(string text)
         {
             username = text;
