@@ -8,10 +8,13 @@ public class Movement : MonoBehaviour
 
     public CharacterController controller;
 
-    public float speed = 6f;
+    public float speed = 1f;
+    public float RotateSmoothTime = 0.1f;
+    private float AngularVelocity = 0.0f;
 
-    public float turnSmoothTime = 0.1f;
-    float turnSmoothVelocity;
+    Vector3 direction;
+    Coroutine co;
+    private bool moving;
 
     [SerializeField]
     private NetworkIdentity networkIdentity;
@@ -22,7 +25,13 @@ public class Movement : MonoBehaviour
         
         if (networkIdentity.IsControlling())
         {
-            checkMovement();
+            //checkMovement();
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                SetTargetPosition();
+            }
+
         } else
         {
             Debug.Log("Not controlling");
@@ -31,29 +40,57 @@ public class Movement : MonoBehaviour
         
     }
 
-    private void FixedUpdate()
+    private void SetTargetPosition()
     {
+
+
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         
-    }
-
-    private void checkMovement()
-    {
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-
-        // transform.position += new Vector3(horizontal, 0, vertical) * speed * Time.deltaTime;
-        
-        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
-
-        if (direction.magnitude >= 0.1f)
+        if (Physics.Raycast(ray, out RaycastHit raycastHit))
         {
+            Debug.Log("target transform: " + raycastHit.transform.gameObject);
+            // transform.position = Vector3.MoveTowards(transform.position, raycastHit.point, speed * Time.deltaTime);
+            // Debug.Log("tP: " + raycastHit.point);
+            direction = new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z).normalized;
 
-            float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
-
-            controller.Move(direction * speed * Time.deltaTime);
+            if (!moving)
+            {
+                moving = true;
+                co = StartCoroutine(MoveTo(transform, new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z), speed));
+            } else
+            {
+                StopAllCoroutines();
+                co = StartCoroutine(MoveTo(transform, new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z), speed));
+            }
         }
+        
     }
 
+    IEnumerator MoveTo(Transform mover, Vector3 destination, float speed)
+    {
+        // This looks unsafe, but Unity uses
+        // en epsilon when comparing vectors.
+
+        while (mover.position != destination)
+        {
+            
+            mover.position = Vector3.MoveTowards(
+                mover.position,
+                destination,
+                speed * Time.deltaTime);
+
+            var target_rot = Quaternion.LookRotation(destination - transform.position);
+            var delta = Quaternion.Angle(transform.rotation, target_rot);
+            if (delta > 0.0f)
+            {
+                var t = Mathf.SmoothDampAngle(delta, 0.0f, ref AngularVelocity, RotateSmoothTime);
+                t = 1.0f - t / delta;
+                transform.rotation = Quaternion.Slerp(transform.rotation, target_rot, t);
+            }
+
+            // Wait a frame and move again.
+            yield return null;
+        }
+        moving = false;
+    }
 }

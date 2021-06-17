@@ -19,6 +19,9 @@ namespace Project.Networking
         private GameObject playerPrefab;
 
         public SocketIOController io;
+        public ChatManager cm;
+
+        private ChatMessage msgPayload;
 
         public static string ClientID { get; private set; }
 
@@ -114,10 +117,15 @@ namespace Project.Networking
 
             io.On("chatMessage", (SocketIOEvent E) =>
             {
-                
                 var obj = (JObject)JsonConvert.DeserializeObject<object>(E.data);
                 string id = obj["id"].Value<string>();
                 // string roomid = obj["roomid"].Value<string>();
+                string message = obj["message"].Value<string>();
+
+                Debug.Log("received chatMessage: " + message);
+
+                cm = GetComponent<ChatManager>();
+                cm.SendMessageToChat("hello");
 
                 // If logged in,
 
@@ -138,11 +146,31 @@ namespace Project.Networking
             });
         }
 
+        // Lazy loading technique to set reference 
         public void AttemptToJoinLobby()
         {
             io.Emit("joinGame");
         }
 
+        public void SendMessage(string message)
+        {
+
+            msgPayload = new ChatMessage();
+            msgPayload.message = message;
+
+
+            io.Emit("chatMessage", JsonUtility.ToJson(msgPayload));
+            Debug.Log("emitted: " + message);
+        }
+
+    }
+
+    [Serializable]
+    public class ChatMessage
+    {
+        public string id;
+        public string lobbyid;
+        public string message;
     }
 
     [Serializable]

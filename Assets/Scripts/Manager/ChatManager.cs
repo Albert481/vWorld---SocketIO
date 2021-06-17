@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UnitySocketIO;
+using UnitySocketIO.Events;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,19 +9,29 @@ namespace Project.Networking
 {
     public class ChatManager : MonoBehaviour
     {
-        private NetworkIdentity networkIdentity;
         public int maxMessages = 25;
 
         public GameObject chatPanel, textObject;
         public TMPro.TMP_InputField inputField;
-             
+
+        [SerializeField]
+        private NetworkIdentity networkIdentity;
+
         [SerializeField]
         List<Message> messageList = new List<Message>();
 
+        public NetworkClient socketReference;
+
+        public NetworkClient SocketReference
+        {
+            get
+            {
+                return socketReference = (socketReference == null) ? FindObjectOfType<NetworkClient>() : socketReference;
+            }
+        }
 
         void Start()
         {
-
         }
 
         void Update()
@@ -29,7 +41,11 @@ namespace Project.Networking
             {
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
-                    SendMessageToChat(inputField.text);
+                    Debug.Log("my networkIdentify is: " + networkIdentity.GetID());
+
+                    SendMessageToChat(inputField.text); // sends locally
+                    socketReference.SendMessage(inputField.text); // emits to socket io server
+
 
                     inputField.text = "";
                     inputField.Select();
@@ -56,8 +72,6 @@ namespace Project.Networking
             newMessage.textObject.text = newMessage.text;
 
             messageList.Add(newMessage);
-
-            // networkIdentity.GetSocket().Emit("chatMesage", JsonUtility.ToJson(player));
         }
     }
 

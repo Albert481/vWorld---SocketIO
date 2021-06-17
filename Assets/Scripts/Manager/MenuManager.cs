@@ -23,6 +23,10 @@ namespace Project.Managers
         [SerializeField]
         private GameObject signInContainer;
 
+        [Header("Chat")]
+        [SerializeField]
+        private GameObject chatContainer;
+
         private string username;
         private string password;
 
@@ -41,8 +45,6 @@ namespace Project.Managers
             queueButton.interactable = false;
             signInContainer.SetActive(false);
             joinContainer.SetActive(false);
-            
-            
         }
 
         public void OnQueue()

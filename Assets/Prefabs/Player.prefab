@@ -225,7 +225,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 4139520566478823084}
   speed: 6
-  turnSmoothTime: 0.1
+  RotateSmoothTime: 0.1
+  layerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   networkIdentity: {fileID: 5746560321471503098}
 --- !u!114 &5746560321471503098
 MonoBehaviour:
