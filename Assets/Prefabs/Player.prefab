@@ -125,7 +125,7 @@ Transform:
   m_GameObject: {fileID: 4139520566478823078}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.6, y: 0.6, z: 0.6}
   m_Children:
   - {fileID: 6724637953580676268}
   - {fileID: 992022968793834446}
@@ -226,9 +226,6 @@ MonoBehaviour:
   controller: {fileID: 4139520566478823084}
   speed: 6
   RotateSmoothTime: 0.1
-  layerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
   networkIdentity: {fileID: 5746560321471503098}
 --- !u!114 &5746560321471503098
 MonoBehaviour:
