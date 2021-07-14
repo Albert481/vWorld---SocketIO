@@ -33,7 +33,7 @@ namespace Project.Networking
             // base.Start();
             initialize();
             setupEvents();
-            io.Connect();
+            io.Invoke("Connect",2f);
         }
 
         // Update is called once per frame
