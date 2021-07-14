@@ -1315,6 +1315,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 4139520566478823078, guid: da79d899cf63acd4cb587d03e0f9420b,
     type: 3}
   io: {fileID: 954892520}
+  cm: {fileID: 1895825963}
 --- !u!4 &777589511
 Transform:
   m_ObjectHideFlags: 0
@@ -1454,7 +1455,7 @@ GameObject:
   - component: {fileID: 931266872}
   - component: {fileID: 931266871}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Canvas - Main Menu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2397,7 +2398,9 @@ MonoBehaviour:
   textObject: {fileID: 6086819809949272143, guid: 1550ab6866e39c246b507906bbac033b,
     type: 3}
   inputField: {fileID: 311139312}
+  networkIdentity: {fileID: 0}
   messageList: []
+  socketReference: {fileID: 777589510}
 --- !u!4 &1895825964
 Transform:
   m_ObjectHideFlags: 0

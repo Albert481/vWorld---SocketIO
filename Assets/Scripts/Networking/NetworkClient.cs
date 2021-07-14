@@ -118,14 +118,16 @@ namespace Project.Networking
             io.On("chatMessage", (SocketIOEvent E) =>
             {
                 var obj = (JObject)JsonConvert.DeserializeObject<object>(E.data);
-                string id = obj["id"].Value<string>();
-                // string roomid = obj["roomid"].Value<string>();
-                string message = obj["message"].Value<string>();
 
-                Debug.Log("received chatMessage: " + message);
+                Debug.Log("received chatMessage: " + obj);
 
-                cm = GetComponent<ChatManager>();
-                cm.SendMessageToChat("hello");
+                ChatMessage chatmsg = new ChatMessage();
+                chatmsg.id = obj["id"].Value<string>();
+                chatmsg.lobbyid = obj["lobbyid"].Value<string>();
+                chatmsg.message = obj["message"].Value<string>();
+
+                cm.SendMessageToChat(chatmsg);
+                
 
                 // If logged in,
 
@@ -152,15 +154,16 @@ namespace Project.Networking
             io.Emit("joinGame");
         }
 
-        public void SendMessage(string message)
+        public void SendMessage(ChatMessage payload)
         {
 
             msgPayload = new ChatMessage();
-            msgPayload.message = message;
-
+            msgPayload.id = ClientID;
+            msgPayload.lobbyid = payload.lobbyid;
+            msgPayload.message = payload.message;
 
             io.Emit("chatMessage", JsonUtility.ToJson(msgPayload));
-            Debug.Log("emitted: " + message);
+            Debug.Log("emitted: " + payload.message);
         }
 
     }

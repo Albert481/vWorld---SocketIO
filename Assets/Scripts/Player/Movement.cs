@@ -34,7 +34,7 @@ public class Movement : MonoBehaviour
 
         } else
         {
-            Debug.Log("Not controlling");
+            // Debug.Log("Not controlling");
         }
 
         

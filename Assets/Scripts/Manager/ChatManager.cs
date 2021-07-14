@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnitySocketIO;
 using UnitySocketIO.Events;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,11 +43,15 @@ namespace Project.Networking
             {
                 if (Input.GetKeyDown(KeyCode.Return))
                 {
-                    Debug.Log("my networkIdentify is: " + networkIdentity.GetID());
+                    Debug.Log("my networkIdentity is: " + NetworkClient.ClientID);
 
-                    SendMessageToChat(inputField.text); // sends locally
-                    socketReference.SendMessage(inputField.text); // emits to socket io server
+                    ChatMessage newMessage = new ChatMessage();
+                    newMessage.id = NetworkClient.ClientID;
+                    newMessage.lobbyid = "LOBBY";
+                    newMessage.message = inputField.text;
 
+                    SendMessageToChat(newMessage); // sends locally
+                    socketReference.SendMessage(newMessage); // emits to socket io server
 
                     inputField.text = "";
                     inputField.Select();
@@ -56,7 +62,7 @@ namespace Project.Networking
            
         }
 
-        public void SendMessageToChat(string text)
+        public void SendMessageToChat(ChatMessage payload)
         {
             if (messageList.Count >= maxMessages)
             {
@@ -64,12 +70,15 @@ namespace Project.Networking
                 messageList.Remove(messageList[0]);
             }
 
+            Debug.Log("my JObject payload: " + payload);
+
             Message newMessage = new Message();
-            newMessage.text = text;
+            newMessage.userID = payload.id;
+            newMessage.text = payload.message;
 
             GameObject newText = Instantiate(textObject, chatPanel.transform);
             newMessage.textObject = newText.GetComponent<TMPro.TextMeshProUGUI>();
-            newMessage.textObject.text = newMessage.text;
+            newMessage.textObject.text = newMessage.userID + ": " + newMessage.text;
 
             messageList.Add(newMessage);
         }
@@ -78,6 +87,7 @@ namespace Project.Networking
     [System.Serializable]
     public class Message
     {
+        public string userID;
         public string text;
         public TMPro.TextMeshProUGUI textObject;
     }
