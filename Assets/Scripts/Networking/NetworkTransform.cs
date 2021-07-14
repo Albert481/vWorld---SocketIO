@@ -24,7 +24,7 @@ namespace Project.Networking
             oldPosition = transform.position;
             oldRotation = transform.rotation;
             player = new Player();
-            player.position = new Vector3(0, 1, 0);
+            player.position = new Vector3(0, 0, 0);
             player.rotation = new Quaternion(0, 0, 0, 0);
 
             if (!networkIdentity.IsControlling())

@@ -19,6 +19,9 @@ namespace Project.Networking
         private GameObject playerPrefab;
 
         public SocketIOController io;
+        public ChatManager cm;
+
+        private ChatMessage msgPayload;
 
         public static string ClientID { get; private set; }
 
@@ -76,9 +79,18 @@ namespace Project.Networking
 
                 if (ni.IsControlling())
                 {
-                    Camera.main.GetComponent<CameraFollow>().setTarget(go.transform);
+                    Camera.main.GetComponentInChildren<CameraFollow>().setTarget(go.transform);
                 }
 
+            });
+
+            io.On("loadGame", (SocketIOEvent E) =>
+            {
+                Debug.Log("Switching to game");
+                SceneManagementManager.Instance.LoadLevel(SceneList.LOBBY, (levelName) =>
+                {
+                    // SceneManagementManager.Instance.UnLoadLevel(SceneList.LOBBY);
+                });
             });
 
             io.On("updatePosition", (SocketIOEvent E) =>
@@ -103,6 +115,27 @@ namespace Project.Networking
                 ni.transform.rotation = new Quaternion(xRotation, yRotation, zRotation, wRotation);
             });
 
+            io.On("chatMessage", (SocketIOEvent E) =>
+            {
+                var obj = (JObject)JsonConvert.DeserializeObject<object>(E.data);
+
+                Debug.Log("received chatMessage: " + obj);
+
+                ChatMessage chatmsg = new ChatMessage();
+                chatmsg.id = obj["id"].Value<string>();
+                chatmsg.lobbyid = obj["lobbyid"].Value<string>();
+                chatmsg.message = obj["message"].Value<string>();
+
+                cm.SendMessageToChat(chatmsg);
+                
+
+                // If logged in,
+
+
+
+
+            });
+
             io.On("disconnected", (SocketIOEvent E) =>
             {
                 // string id = E.data["id"].ToString().RemoveQuotes();
@@ -115,11 +148,32 @@ namespace Project.Networking
             });
         }
 
+        // Lazy loading technique to set reference 
         public void AttemptToJoinLobby()
         {
             io.Emit("joinGame");
         }
 
+        public void SendMessage(ChatMessage payload)
+        {
+
+            msgPayload = new ChatMessage();
+            msgPayload.id = ClientID;
+            msgPayload.lobbyid = payload.lobbyid;
+            msgPayload.message = payload.message;
+
+            io.Emit("chatMessage", JsonUtility.ToJson(msgPayload));
+            Debug.Log("emitted: " + payload.message);
+        }
+
+    }
+
+    [Serializable]
+    public class ChatMessage
+    {
+        public string id;
+        public string lobbyid;
+        public string message;
     }
 
     [Serializable]
