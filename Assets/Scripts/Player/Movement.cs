@@ -48,20 +48,28 @@ public class Movement : MonoBehaviour
         
         if (Physics.Raycast(ray, out RaycastHit raycastHit))
         {
-            Debug.Log("target transform: " + raycastHit.transform.gameObject);
+            Debug.Log("target layer: " + raycastHit.collider.gameObject.layer);
             // transform.position = Vector3.MoveTowards(transform.position, raycastHit.point, speed * Time.deltaTime);
             // Debug.Log("tP: " + raycastHit.point);
             direction = new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z).normalized;
 
-            if (!moving)
+            bool isOverUI = UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
+
+            if (Physics.Raycast(ray, out RaycastHit hit) && !isOverUI)
             {
-                moving = true;
-                co = StartCoroutine(MoveTo(transform, new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z), speed));
-            } else
-            {
-                StopAllCoroutines();
-                co = StartCoroutine(MoveTo(transform, new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z), speed));
+                if (!moving)
+                {
+                    moving = true;
+                    co = StartCoroutine(MoveTo(transform, new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z), speed));
+                }
+                else
+                {
+                    StopAllCoroutines();
+                    co = StartCoroutine(MoveTo(transform, new Vector3(raycastHit.point.x, transform.position.y, raycastHit.point.z), speed));
+                }
             }
+
+            
         }
         
     }

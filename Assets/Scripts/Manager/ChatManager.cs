@@ -12,7 +12,7 @@ namespace Project.Networking
     public class ChatManager : MonoBehaviour
     {
         public int maxMessages = 25;
-
+        public ScrollRect scrollRect;
         public GameObject chatPanel, textObject;
         public TMPro.TMP_InputField inputField;
 
@@ -79,6 +79,11 @@ namespace Project.Networking
             GameObject newText = Instantiate(textObject, chatPanel.transform);
             newMessage.textObject = newText.GetComponent<TMPro.TextMeshProUGUI>();
             newMessage.textObject.text = newMessage.userID + ": " + newMessage.text;
+            newMessage.textObject.fontSize = 10;
+
+            Canvas.ForceUpdateCanvases();
+            scrollRect.GetComponent<ScrollRect>().verticalNormalizedPosition = 0f;
+            Canvas.ForceUpdateCanvases();
 
             messageList.Add(newMessage);
         }
