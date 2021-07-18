@@ -73,6 +73,7 @@ namespace Project.Networking
                 GameObject go = Instantiate(playerPrefab, networkContainer);
                 go.name = string.Format("Player ({0})", id);
                 NetworkIdentity ni = go.GetComponent<NetworkIdentity>();
+                
                 ni.setControllerID(id);
                 ni.SetSocketReference(io);
                 serverObjects.Add(id, ni);
